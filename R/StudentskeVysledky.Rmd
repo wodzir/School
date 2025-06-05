@@ -1,0 +1,41 @@
+---
+title: "StudentskeVysledky"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+rm(list = ls())
+library(dplyr) 
+
+df <- read.csv("StudentsPerformance.csv")
+
+```
+
+```{r echo=FALSE}
+df %>% arrange(desc(math.score)) %>% filter(race.ethnicity=="group E") %>% head(5)
+
+```
+### Prumerny vysledek v matematice podle skupin
+```{r echo=FALSE}
+df %>% group_by(race.ethnicity) %>% summarise(prumer = mean(math.score)) %>% arrange(desc(prumer))
+```
+
+```{r echo=FALSE}
+library(ggplot2)
+
+df_mean <- df %>% group_by(race.ethnicity) %>% summarise(mean_math = mean(math.score, na.rm = TRUE)) %>% arrange(desc(mean_math))
+
+ggplot(df_mean, aes(x = reorder(race.ethnicity, -mean_math), y = mean_math, fill = race.ethnicity)) +
+  geom_col() +
+  labs(
+    title = "Průměrné skóre z matematiky podle studijní skupiny",
+    x = "Studijní skupina",
+    y = "Průměrné skóre z matematiky"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```

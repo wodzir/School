@@ -1,0 +1,14 @@
+Zápočet Základ zpracování dat: 
+- zápočtové úlohy (R) 
+- 4 hodiny času 
+- možno použít cokoli, mimo umělé a cizí inteligence 
+- počítače školní (ne vlastní), kvůli sledování 
+- odevzdáme report (.rmd), export do html 
+- vytvoří se Moodle (odevzdávání zápočtu + nějaké materiály) 
+
+Materiály 
+- stránky škvor 
+- https://physics.ujep.cz/~jskvor/ 
+
+Zdroje pro R
+- .csv a jiné soubory s daty 

@@ -1,0 +1,29 @@
+---
+title: "Shootings Analysis"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+---
+
+# Top 5 států podle počtu policejních střeleb
+
+```{r echo=FALSE}
+# Nastaveni prostredi
+rm(list = ls())           # Vyčistí pracovní prostor
+library(dplyr)            # Načte balíček pro práci s daty
+
+df <- read.csv("shootings.csv")
+
+# Spočítá počet případů podle státu, seřadí sestupně a vypíše prvních 5
+df %>%
+  count(state) %>%
+  arrange(desc(n)) %>%
+  head(5)
+```
+
+```{r echo=FALSE}
+table(df$state) |> sort(decreasing = T) |> head(5)
+```
+

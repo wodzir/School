@@ -1,0 +1,40 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    toc: true
+    df_print: paged
+  html_notebook:
+    toc: true
+    toc_float: true
+---
+
+```{r}
+rm(list=ls())
+library(dplyr)
+
+df <- read.csv("shootings.csv")
+```
+
+##5 státu, kde nejčastěji dochází ke střelbě při policejních zásazích 
+```{r}
+table(df$state) |> sort(decreasing = T) |> head(5)
+```
+```{r}
+df1 <- df %>% group_by(state) %>% summarise(pocet=n()) %>% arrange(-pocet) %>%  head(5)
+df1
+```
+
+```{r}
+df %>% count(state) %>% arrange(-n) %>%  head(5)
+```
+```{r}
+library(DT)
+library(ggplot2)
+df %>% count(state) %>% arrange(-n) %>%  head(5) %>%  DT::datatable()
+
+df$year <- lubridate::year(df$date)
+
+df %>% count(year,state) %>% ggplot(aes(x=year,y=n)) + geom_col() #+ facet_wrap(-state)
+```
+
