@@ -1,0 +1,242 @@
+### 📌 Popis SIRD modelu z tvého kódu
+
+SIRD model je **rozšíření základního SIR modelu** o složku **úmrtí (D)**. Model slouží k simulaci šíření infekční choroby v populaci.
+
+#### Rovnice a parametry
+
+Základní rovnice v diskrétní podobě (s krokem `dt = 1 den`):
+
+* $dS = -\frac{\beta}{N} I S$     (*Snížení počtu náchylných*)
+* $dR = \gamma I$     (*Uzdravení*)
+* $dD = \mu I$     (*Úmrtí*)
+* $dI = -dS - dR - dD$     (*Změna infikovaných*)
+
+Kde:
+
+* `S`: Počet zdravých, ale náchylných
+* `I`: Počet aktuálně nakažených
+* `R`: Počet uzdravených
+* `D`: Počet zemřelých
+* `β` (*beta*): Infekčnost (rychlost šíření)
+* `γ` (*gama*): Rychlost uzdravování
+* `μ` (*my*): Úmrtnost
+
+---
+
+### 🔧 Co model aktuálně dělá
+
+* Simuluje 100 dní.
+* Každý **sedmý den (pátek)** se zdvojnásobí hodnota `beta`, aby se modelovala vyšší nakažlivost (např. večírky).
+* Po výpočtu kroku se `beta` vrací zpět na původní hodnotu.
+
+---
+
+### 🔍 Možnosti úprav a experimentování
+
+Zde je několik způsobů, jak můžeš SIRD model vylepšovat nebo ladit pro reálné situace:
+
+---
+
+#### 1. **Dynamická beta a gama**
+
+* **Realistické šíření**: `beta` se může **snižovat s časem** např. díky restrikcím (lockdown).
+* **Lékařský pokrok**: `gama` se může **zvyšovat**, protože lidé se léčí rychleji.
+
+```python
+if it % 10 == 0:
+    beta *= 0.9  # postupné zpomalování šíření
+    gama *= 1.05  # zrychlení léčby
+```
+
+---
+
+#### 2. **Zásahy do chování populace**
+
+* Zavedení **roušek, karantény, očkování**, omezeného pohybu – změny `beta` podle dat.
+
+```python
+if t[it] == 20:  # třeba od 20. dne lockdown
+    beta *= 0.5
+```
+
+---
+
+#### 3. **Parametrická studie**
+
+* Spusť model víckrát s různými kombinacemi `beta`, `gama`, `mu`.
+* Sleduj, kdy epidemie vyvrcholí, kolik lidí onemocní atd.
+
+```python
+for beta in [0.2, 0.4, 0.6]:
+    for gama in [0.02, 0.035, 0.05]:
+        SIRD_simulace(beta, gama, mu)
+```
+
+---
+
+#### 4. **Fitování modelu na reálná data**
+
+* Můžeš použít reálné data (např. COVID v ČR) a zpětně spočítat hodnoty `beta` a `gama`.
+* Fitování se provádí pomocí minimalizace rozdílu mezi daty a modelem (např. metodou nejmenších čtverců).
+
+---
+
+#### 5. **Zachování podmínky: S + I + R + D = N**
+
+* Sleduj, jestli model tuto podmínku zachovává (můžeš přidat kontrolu a výpis).
+* Pokud ne, můžeš upravit zaokrouhlování (v kódu se teď používá `round()` a `int()` – to může způsobovat drobné chyby).
+
+---
+
+### 📊 Vylepšení grafiky pro zápočet
+
+Zajisti:
+
+* Popis os (`xlabel`, `ylabel`)
+* Popis názvu grafu (`plt.title(...)`)
+* Možná i uložení obrázku: `plt.savefig('SIRD_simulace.png')`
+
+---
+
+### 🔄 Návrh rozšiřující funkce
+
+```python
+def SIRD_simulace(beta=0.4, gama=0.035, mu=0.005, Nt=100, lockdown_day=None, lockdown_factor=0.5):
+    # stejný průběh jako v SIRD, ale s možností lockdownu nebo upravených parametrů
+    ...
+```
+
+Tuto funkci pak můžeš volat s různými scénáři a sledovat, jak se model chová.
+
+---
+
+Chceš, abych ti upravil kód `SIRD()` do podoby s parametry nebo ukázal dynamické `beta`, které klesá podle určité funkce?
+
+
+
+
+
+
+
+
+
+Skvělé, že se na to ptáš – **model Lotka–Volterra** je ideální pro **zážitkové modelování**. Můžeš s ním simulovat různá ekologická, biologická i abstraktní sociální prostředí. Níže ti dám přehled **jak s tím experimentovat, co změna znamená a jak to interpretovat**.
+
+---
+
+## 🛠️ Jak dělat modelování v Lotka–Volterra
+
+### 1. **Změna počátečních podmínek**
+
+Změň počáteční hodnoty `kor` a `lov`:
+
+```python
+kor = 200  # víc kořisti
+lov = 5    # míň predátorů
+```
+
+🧠 **Co se stane:**
+Zpočátku bude rychlý růst kořisti, protože málo predátorů → ale pak skokově naroste i počet predátorů → masivní úbytek kořisti.
+
+---
+
+### 2. **Změna parametru alfa (α) – růst kořisti**
+
+```python
+alfa = 0.4  # pomalejší růst
+alfa = 1.2  # rychlejší růst
+```
+
+🧠 **Interpretace:**
+
+* Vyšší `alfa`: rychlejší množení kořisti, predátoři budou mít víc potravy
+* Nižší `alfa`: kořist se množší pomaleji, predátoři možná vyhynou
+
+---
+
+### 3. **Změna beta (β) – efektivita lovu**
+
+```python
+beta = 0.01  # méně efektivní lov
+beta = 0.05  # predátoři loví efektivněji
+```
+
+🧠 **Interpretace:**
+
+* Vyšší `beta`: rychlejší úbytek kořisti, může to vést ke kolapsu populace
+* Nižší `beta`: predátoři nejsou efektivní → kořist přežívá déle, predátoři vymírají
+
+---
+
+### 4. **Změna gama (γ) – úhyn predátorů**
+
+```python
+gama = 0.2  # žijí déle bez potravy
+gama = 0.8  # umírají rychle
+```
+
+🧠 **Interpretace:**
+
+* Vyšší `gama`: predátoři umírají rychle bez kořisti → kolísání se zmírní
+* Nižší `gama`: i bez potravy dlouho přežívají → zpoždění reakce → vyšší výkyvy
+
+---
+
+### 5. **Změna delta (δ) – množení predátorů při dostatku kořisti**
+
+```python
+delta = 0.01  # standardní
+delta = 0.03  # rychlejší růst predátorů
+```
+
+🧠 **Interpretace:**
+
+* Vyšší `delta`: boom predátorů při nadbytku potravy → dříve způsobí pád kořisti
+* Nižší `delta`: i při dostatku potravy rostou pomalu → šetrnější cykly
+
+---
+
+## 🧪 Co modelovat – příklady scénářů
+
+| Scénář                       | Úprava parametrů                    | Co sleduješ                               |
+| ---------------------------- | ----------------------------------- | ----------------------------------------- |
+| **Přemnožení kořisti**       | `alfa ↑`, `beta ↓`                  | Zda se predátoři dokážou přizpůsobit      |
+| **Ekologická krize**         | `alfa ↓`, `gama ↑`                  | Úbytek obou populací                      |
+| **Změna klimatu**            | `alfa` a `gama` se mění s časem     | Dopad vnějších podmínek                   |
+| **Lov pod kontrolou (lidé)** | Umělé snížení `Y` v čase            | Jak se zotaví kořist                      |
+| **Invazivní druh**           | Přidání druhého dravce nebo kořisti | Složitější modely (Volterra s více druhy) |
+
+---
+
+## 🖼️ Vizuální výstupy
+
+* **Graf v čase** (už máš): X(t), Y(t)
+* **Fázový diagram**: osa X = počet kořisti, osa Y = počet predátorů → krásné cykly
+
+```python
+plt.plot(X, Y)
+plt.xlabel("Počet zajíců")
+plt.ylabel("Počet vlků")
+plt.title("Fázový diagram")
+plt.show()
+```
+
+---
+
+## 📦 Možné rozšíření modelu
+
+* **Nosná kapacita prostředí** (např. kořist má maximum):
+
+  $$
+  \frac{dX}{dt} = \alpha X \left(1 - \frac{X}{K}\right) - \beta X Y
+  $$
+
+* **Zásahy člověka** (sezónní lov, krmení predátorů)
+
+* **Zpožděná odezva** (např. predátor se množí až po čase)
+
+---
+
+### 🔁 Chceš interaktivní model (např. se sliderem)?
+
+Můžu ti dát kód, kde si během běhu upravuješ parametry a hned vidíš graf (pomocí `ipywidgets` nebo `streamlit`). Dej vědět.
